@@ -1,0 +1,69 @@
+Benefits of  multi threading :
+
+1)Better Resource Utilization:
+ e.g. 
+Imagine an application that reads and processes files from the local file system. 
+Lets say that reading af file from disk takes 5 seconds and processing it takes 2 seconds.
+Processing two files then takes
+
+  5 seconds reading file A
+  2 seconds processing file A
+  5 seconds reading file B
+  2 seconds processing file B
+-----------------------
+ 14 seconds total
+
+By changing the order of the operations, the CPU could be better utilized. Look at this ordering:
+
+  5 seconds reading file A
+  5 seconds reading file B + 2 seconds processing file A
+  2 seconds processing file B
+-----------------------
+ 12 seconds total
+The CPU waits for the first file to be read. 
+Then it starts the read of the second file. 
+While the second file is being read, the CPU processes the first file.
+Remember, while waiting for the file to be read from disk, the CPU is mostly idle.
+------------------------------------------------------------------------------------------------
+2) Concept of worker thread :
+--------------------------------- 
+while(server is active){
+    listen for request
+    hand request to worker thread
+  }
+--------------------------------
+Costs : Context switching overhead
+Costs are more than single threading.
+----------------------------------------------------
+3)Parallel Delegator-worker model:
+Stateless worker
+one delegator to other workers.
+Shared state of memory or shared database.
+Ordering is non-deterministic.
+4)Assembly line model
+5)Functional Parallelism (Event driven model functions as agents) 
+6)Same thraeded system :
+sharding the database 
+single n threaded system per n threaded core.
+Thread communication trough messaging(byte sequence).
+------------------------------------------------------
+Critical Section:
+A critical section is a section of code that is executed by multiple threads and 
+where the sequence of execution for the threads makes a difference in the result of 
+the concurrent execution of the critical section.
+--------------------------------------------------------
+Race Condition:
+When the result of multiple threads executing a critical section may differ depending on the sequence in 
+which the threads execute, the critical section is said to contain a race condition.
+
+Why Race Condition Occurs:
+The problems arise when multiple threads access the same resources.
+For instance the same memory (variables, arrays, or objects), systems (databases, web services etc.) or files.
+In fact, problems only arise if one or more of the threads write to these resources.
+It is safe to let multiple threads read the same resources, as long as the resources do not change.
+-----------------------------------------------------------
+Preventing race condition :
+Race conditions can be avoided by proper thread synchronization in critical sections.
+Thread synchronization can be achieved using a synchronized block of Java code.
+Thread synchronization can also be achieved using other synchronization constructs 
+like locks or atomic variables like java.util.concurrent.atomic.AtomicInteger.
