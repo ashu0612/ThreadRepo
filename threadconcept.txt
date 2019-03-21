@@ -67,3 +67,103 @@ Race conditions can be avoided by proper thread synchronization in critical sect
 Thread synchronization can be achieved using a synchronized block of Java code.
 Thread synchronization can also be achieved using other synchronization constructs 
 like locks or atomic variables like java.util.concurrent.atomic.AtomicInteger.
+-----------------------------------------------------------
+classic example of race condition :
+Singleton getInstance():
+
+public Singleton getInstance(){
+if(_instance == null){   //race condition if two threads sees _instance= null
+_instance = new Singleton();
+}
+}
+If you call getInstance() method from two thread simultaneously 
+its possible that while one thread is initializing singleton after null check,
+another thread sees value of _instance reference variable as null especially if your object takes longer time to 
+initialize and enters into critical section which eventually results in getInstance() 
+returning two separate instance of Singleton. 
+------------------------------------------------------------
+Thread Safety and shared Resources:
+
+1)Local Variables:
+Local variables are stored in each thread's own stack. That means that local variables are never shared between threads.
+That also means that all local primitive variables are thread safe.
+
+2)LocalobjectReferences :
+They are stored in heap but are thread safe when they are not used by other threads.
+If an object created locally never escapes the method it was created in, it is thread safe.
+In fact you can also pass it on to other methods and objects as long as none of 
+these methods or objects make the passed object available to other threads.
+
+3)Object Member variables :
+Object member variables (fields) are stored on the heap along with the object.
+Therefore, if two threads call a method on the same object instance and 
+this method updates object member variables, the method is not thread safe.  
+Either create new object instances or use synchronized blocks or constructs to use that resuource.
+--------------------------------------------------------------
+To make the code  thread safe we can use following approaches :
+1)Create new instances for every thraed.(not good)
+2)Make shared instances immutable (as per code reqirement use is strictly prohibited)
+e.g.
+public class ImmutableValue{
+
+  private int value = 0;
+
+  public ImmutableValue(int value){
+    this.value = value;
+  }
+
+  public int getValue(){
+    return this.value;
+  }
+
+  
+      public ImmutableValue add(int valueToAdd){
+      return new ImmutableValue(this.value + valueToAdd);
+      }
+  
+}
+It has been told that immutable objects are thread safe.But we need to write the code to make it thread safe.
+e.g. 
+public class String {
+    private final char value[];
+    /** Cache the hash code for the string */
+    private int hash; // Default to 0
+    public String(char[] value) {
+        this.value = Arrays.copyOf(value, value.length);
+    }
+    public int hashCode() {
+        int h = hash;
+        if (h == 0 && value.length > 0) {
+            char val[] = value;
+            for (int i = 0; i < value.length; i++) {
+                h = 31 * h + val[i];
+            }
+            hash = h;
+        }
+        return h;
+    }
+}
+As you can see above code is thread safe since we are not accessing hash variable directly.
+If we access the hash variable directly than this code will not be thread safe i.e.
+ public int hashCode() {
+        if (hash == 0 && value.length > 0) {
+            char val[] = value;
+            for (int i = 0; i < value.length; i++) {
+                hash = 31 * hash + val[i];
+            }
+        }
+        return hash;
+    } 
+3)Make shared code synchronized. Single point of execution.
+--------------------------------------------------------------
+Memory Model:
+1)Thread Stack
+Local variables
+Methods
+object references at method level.
+Cant be shared among threads they have to have a separate copy for shared objects also.
+2)Heap:
+Objects,Static,Member variables.
+Can be shared 
+Java Memory Model-->computer Architecture model(RAM)
+ 
