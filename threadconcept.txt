@@ -166,4 +166,39 @@ Cant be shared among threads they have to have a separate copy for shared object
 Objects,Static,Member variables.
 Can be shared 
 Java Memory Model-->computer Architecture model(RAM)
- 
+
+problems --> visibilty of variables stored in main memory or cache-->use volatile keyword.
+volatile-->Happens before guarantee
+To address the instruction reordering challenge, the Java volatile keyword gives a "happens-before" guarantee, in addition to the visibility guarantee.
+The happens-before guarantee guarantees that:
+Reads from and writes to other variables cannot be reordered to occur after a write to a volatile variable,
+if the reads / writes originally occurred before the write to the volatile variable. 
+The reads / writes before a write to a volatile variable are guaranteed to "happen before" the write to the volatile variable.
+Notice that it is still possible for e.g. reads / writes of other variables located after a write to a volatile to be reordered 
+to occur before that write to the volatile. Just not the other way around. From after to before is allowed, but from before to after is not allowed.
+---------------------------------------------------------------
+Reads from and writes to other variables cannot be reordered to occur before a read of a volatile variable, if the reads / writes originally occurred after the read of the volatile variable. Notice that it is possible for reads of other variables that occur before the read of a volatile variable can be reordered to occur after the read of the volatile. Just not the other way around. From before to after is allowed, but from after to before is not allowed.
+The above happens-before guarantee assures that the visibility guarantee of the volatile keyword are being enforced.
+---------------------------------------------------------------
+Thread Local:
+The ThreadLocal class in Java enables you to create variables that can only be read and written by the same thread.
+Thus, even if two threads are executing the same code, and the code has a reference to a ThreadLocal variable,
+then the two threads cannot see each other's ThreadLocal variables.
+Inheritable Thread Local:
+The InheritableThreadLocal class is a subclass of ThreadLocal.
+Instead of each thread having its own value inside a ThreadLocal, the InheritableThreadLocal grants access to 
+values to a thread and all child threads created by that thread.
+If we want to avoid synchronizatoin to make code thread safe than we can use thread local variables.
+---------------------------------------------------------------
+Thread Signalling :
+The purpose of thread signaling is to enable threads to send signals to each other. 
+Additionally, thread signaling enables threads to wait for signals from other threads. 
+For instance, a thread B might wait for a signal from thread A indicating that data is ready to be processed.
+---------------------------------------------------------------
+Wait(),Notify() should not use with string constants or empty string :
+The problem with calling wait() and notify() on the empty string, 
+or any other constant string is, that the JVM/Compiler internally translates constant strings into the same object. 
+That means, that even if you have two different instances, 
+they both reference the same empty string instance. 
+This also means that threads calling doWait() on the first MyWaitNotify 
+instance risk being awakened by doNotify() calls on the second MyWaitNotify instance.
