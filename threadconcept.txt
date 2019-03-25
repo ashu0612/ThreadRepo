@@ -202,3 +202,9 @@ That means, that even if you have two different instances,
 they both reference the same empty string instance. 
 This also means that threads calling doWait() on the first MyWaitNotify 
 instance risk being awakened by doNotify() calls on the second MyWaitNotify instance.
+---------------------------------------------------------------
+Deadlock Prevention :
+Theoratically three techniques are there to prevent deadlock:
+1)Lock Ordering
+2)Lock Timeout
+3)Deadlock Detection
