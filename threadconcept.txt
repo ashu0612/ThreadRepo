@@ -208,3 +208,15 @@ Theoratically three techniques are there to prevent deadlock:
 1)Lock Ordering
 2)Lock Timeout
 3)Deadlock Detection
+---------------------------------------------------------------
+Starvation and Fairness:
+If a thread is not granted CPU time because other threads grab it all, it is called "starvation". The thread is "starved to death" because other threads are allowed the CPU time instead of it. The solution to starvation is called "fairness" - that all threads are fairly granted a chance to execute.
+
+Causes of starvation :
+1)Thread Prioritization:
+Threads with high priority swallow all CPU time from threads with lower priority.
+2)waiting indefinite time as other threads are accessing synchronize block.
+3)Threads waiting on an object (called wait() on it) remain waiting indefinitely because other threads are constantly awakened instead of it.
+Implementing Fairness in Java:
+To implement we can use locks instead of synchronize blocks .
+i.e. in critical section we are not guarded by synchronize block, we are using locks.After finishing the work we critical section gets unlocked.
