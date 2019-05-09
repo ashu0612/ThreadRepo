@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id = "employeeDetails" class = "com.java.aware.EmployeeDetails">
+       <property name = "employeeOne" ref = "employeeOne">
+       </property>
+       <property name = "employeeTwo" ref = "employeeTwo">
+       </property>
+       </bean>
+  <bean id = "employeeOne" class = "com.java.aware.Employee">
+    <property name = "name" value = "Ashu"/>
+    <property name="post" value = "SE"></property>
+  
+  </bean>     
+        
+  <bean id = "employeeTwo" class = "com.java.aware.Employee">
+    <property name = "name" value = "Vishu"/>
+    <property name="post" value = "CEO"></property>
+  
+  </bean>   
+
+</beans>

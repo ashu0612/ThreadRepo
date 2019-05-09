@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<bean id = "personDetails" class = "com.java.innerbean.PersonDetails">
+       <property name = "personA" ref = "personA">
+       </property>
+       <property name = "personB">
+          <bean class = "com.java.innerbean.Person">
+           <property name="name" value = "vishal"></property>
+           <property name="address" value = "Tirupati"></property>
+          </bean>
+       </property>
+       </bean>
+  <bean id = "personA" class = "com.java.innerbean.Person">
+    <property name = "name" value = "Ashu"/>
+    <property name="address" value = "Pune"></property>
+  
+  </bean>     
+</beans>
