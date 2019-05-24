@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+<context:annotation-config></context:annotation-config>
+<!-- This bean is autowired so no need to define property
+it will automatically take the bean first by type
+if multiple beans are there with same type than it will 
+match by Name 
+Third thing is using qualifier at this time it will check
+the qualifier name match with bean name or qualifier tag 
+given-->
+<bean id = "DrawingRoom" class = "com.java.autowire.DrawingRoom">
+	<!-- <property name="drawingRoom" ref = "drawingRoom"></property> -->
+</bean>
+<bean id = "drawingRoomTwo" class = "com.java.autowire.Room">
+	<property name="name" value = "drawingroom"></property>
+	<property name="things" value = "fans"></property>
+	<property name="count" value = "4"></property>
+</bean>
+<bean id = "Room" class = "com.java.autowire.Room">
+	<qualifier value = "drawingRoomOne"></qualifier>
+	<property name="name" value = "bedroom"></property>
+	<property name="things" value = "AC"></property>
+	<property name="count" value = "1"></property>
+</bean>
+
+</beans>
