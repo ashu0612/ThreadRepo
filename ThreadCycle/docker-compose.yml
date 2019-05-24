@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass
+      # PGDATA: /var/lib/postgresql/data 
+      # PGDATA: /var/lib/postgresql/data/pgdata
+    network_mode: bridge 
+    volumes:
+      - ~/s3_db_tmp/:/data/db

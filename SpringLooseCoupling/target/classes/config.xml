@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id = "CybageResource" class = "com.java.loose.CybageResource">
+    	<property name="resource" ref = "resource"></property>
+    </bean>
+	<bean id = "InfyResource" class = "com.java.loose.InfyResource">
+    	<property name="resourceInfy" ref = "resourceInfy"></property>
+    </bean>
+    <bean id = "resource" class = "com.java.loose.Resource">
+    	<property name = "name" value = "Ashu"/>
+    	<property name = "age" value = "29"/>
+    	<property name = "companyName" value = "cybage"/>
+    </bean>
+    <bean id = "resourceInfy" class = "com.java.loose.Resource">
+    	<property name = "name" value = "Atul"/>
+    	<property name = "age" value = "29"/>
+    	<property name = "companyName" value = "Infosys"/>
+    </bean> 
+    <!-- we need to set up bean post processor so that annotation required will work as 
+    it will check what ever dependency is required and is not set while initializing the bean -->
+    <bean class = "org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"></bean>
+</beans>

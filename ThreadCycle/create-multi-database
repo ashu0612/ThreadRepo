@@ -1,0 +1,267 @@
+#!/bin/bash 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+export PGUSER='lak_lpf'
+export PGPASSWORD='lakanaplat'
+DB_DUMP_DIRECTORY=~/s3_db_tmp
+C4K_DATABASE=c4k-snapshot-1556719132
+FOX_DATABASE=fox-snapshot-1551732546
+CMG_DATABASE=cmg-snapshot-1553886454
+GMG_DATABASE=gmg-snapshot-1555609962
+NPG_DATABASE=npg-snapshot-1556719194
+NXS_DATABASE=nxs-snapshot-1554398026
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+# Requirements: Export ACCESS_KEY and SECRET_KEY in profile
+# Get the database dump from S3 into temp directory
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+if [ ! -d $DB_DUMP_DIRECTORY ]; then
+  # Control will enter here if $DIRECTORY exists.
+  mkdir $DB_DUMP_DIRECTORY
+  chmod 777 -R $DB_DUMP_DIRECTORY
+
+fi
+
+get_s3_c4k() {
+   # s3cmd --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY get --force \
+   aws s3 cp s3://lakana-engineering-assets-us-east-1/c4k/$C4K_DATABASE.gz $DB_DUMP_DIRECTORY
+
+    sleep 3
+    gunzip  $DB_DUMP_DIRECTORY/$C4K_DATABASE.gz 
+    ls -l $DB_DUMP_DIRECTORY/
+}
+
+get_s3_fox() {
+   # s3cmd --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY get --force \
+   aws s3 cp s3://lakana-engineering-assets-us-east-1/fox/$FOX_DATABASE.gz $DB_DUMP_DIRECTORY
+
+    sleep 3
+    gunzip  $DB_DUMP_DIRECTORY/$FOX_DATABASE.gz
+    ls -l $DB_DUMP_DIRECTORY/
+}
+
+get_s3_gmg() {
+   # s3cmd --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY get --force \
+   aws s3 cp s3://lakana-engineering-assets-us-east-1/gmg/$GMG_DATABASE.gz $DB_DUMP_DIRECTORY
+
+    sleep 3
+    gunzip  $DB_DUMP_DIRECTORY/$GMG_DATABASE.gz
+    ls -l $DB_DUMP_DIRECTORY/
+}
+
+get_s3_cmg() {
+   # s3cmd --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY get --force \
+   aws s3 cp s3://lakana-engineering-assets-us-east-1/cmg/$CMG_DATABASE.gz $DB_DUMP_DIRECTORY
+
+    sleep 3
+    gunzip  $DB_DUMP_DIRECTORY/$CMG_DATABASE.gz
+    ls -l $DB_DUMP_DIRECTORY/
+}
+
+get_s3_npg() {
+   # s3cmd --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY get --force \
+   aws s3 cp s3://lakana-engineering-assets-us-east-1/npg/$NPG_DATABASE.gz $DB_DUMP_DIRECTORY
+
+    sleep 3
+    gunzip  $DB_DUMP_DIRECTORY/$NPG_DATABASE.gz
+    ls -l $DB_DUMP_DIRECTORY/
+}
+get_s3_nxs() {
+   # s3cmd --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY get --force \
+   aws s3 cp s3://lakana-engineering-assets-us-east-1/nxs/$NXS_DATABASE.gz $DB_DUMP_DIRECTORY
+
+    sleep 3
+    gunzip  $DB_DUMP_DIRECTORY/$NXS_DATABASE.gz
+    ls -l $DB_DUMP_DIRECTORY/
+}
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+# Create Docker
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+create_docker_instanace() {
+    docker-compose up -d
+    sleep 2
+    chmod 777 -R $DB_DUMP_DIRECTORY/
+}
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+# Create database and load the data
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+create_c4k() {
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'DROP DATABASE c4k' 
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'CREATE DATABASE c4k' 
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d c4k -a -f /data/db/$C4K_DATABASE
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d c4k -c "CREATE ROLE lak_lpf WITH SUPERUSER LOGIN PASSWORD 'lakanaplat'"
+}
+
+create_fox() {
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'DROP DATABASE fox' 
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'CREATE DATABASE fox' 
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d fox -a -f /data/db/$FOX_DATABASE
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d fox -c "CREATE ROLE ent_fox WITH SUPERUSER LOGIN PASSWORD 'm1keIke'"
+}
+
+create_cmg() {
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'DROP DATABASE cmg'
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'CREATE DATABASE cmg'
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d cmg -a -f /data/db/$CMG_DATABASE
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d cmg -c "CREATE ROLE ent_cmg WITH SUPERUSER LOGIN PASSWORD '3NTCMGD3V'"
+}
+
+create_gmg() {
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'DROP DATABASE gmg' 
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'CREATE DATABASE gmg' 
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d gmg -a -f /data/db/$GMG_DATABASE
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d gmg -c "CREATE ROLE ent_gmg_sts WITH SUPERUSER LOGIN PASSWORD 'altoids'"
+}
+
+create_npg() {
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'DROP DATABASE npg' 
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'CREATE DATABASE npg' 
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d npg -a -f /data/db/$NPG_DATABASE
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d npg -c "CREATE ROLE lak_lpf WITH SUPERUSER LOGIN PASSWORD 'lakanaplat'"
+}
+create_nxs() {
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'DROP DATABASE nxs' 
+    docker exec -it postgresql_db_1 /usr/bin/psql -c 'CREATE DATABASE nxs' 
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d nxs -a -f /data/db/$NXS_DATABASE
+    sleep 5
+    docker exec -it postgresql_db_1 /usr/bin/psql -d nxs -c "CREATE ROLE lak_lpf WITH SUPERUSER LOGIN PASSWORD 'lakanaplat'"
+}
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+if [ -z "$1" ]; then
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+    echo "|  ./create-multi-database           -- Help                                                                                                  |"
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+    echo "|  ./create-multi-database all       -- Get S3 data and create C4K, FOX, CMG, GMG, NPG, NXS database                                          |" 
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+    echo "+                               D E T A I L S                                                                                                 +"
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+    echo "|  ./create-multi-database get_s3_c4k  -- s3://lakana-engineering-assets-us-east-1/c4k/$C4K_DATABASE.gz $DB_DUMP_DIRECTORY                    |"
+    echo "|  ./create-multi-database c4k         --  Create docker C4K database                                                                         |"
+    echo "|  ./create-multi-database get_s3_fox  -- s3://lakana-engineering-assets-us-east-1/fox/$FOX_DATABASE.gz $DB_DUMP_DIRECTORY                    |"
+    echo "|  ./create-multi-database fox         -- Create docker Fox database                                                                          |"
+    echo "|  ./create-multi-database get_s3_cmg  -- s3://lakana-engineering-assets-us-east-1/cmg/$CMG_DATABASE.gz $DB_DUMP_DIRECTORY                    |"
+    echo "|  ./create-multi-database cmg         -- Create docker CMG database                                                                          |"
+    echo "|  ./create-multi-database get_s3_gmg  -- s3://lakana-engineering-assets-us-east-1/gmg/$GMG_DATABASE.gz $DB_DUMP_DIRECTORY                    |"
+    echo "|  ./create-multi-database gmg         -- Create docker GMG database                                                                          |"
+    echo "|  ./create-multi-database get_s3_npg  -- s3://lakana-engineering-assets-us-east-1/npg/$NPG_DATABASE.gz $DB_DUMP_DIRECTORY                    |"
+    echo "|  ./create-multi-database npg         --  Create docker NPG database                                                                         |"    
+    echo "|  ./create-multi-database get_s3_nxs  -- s3://lakana-engineering-assets-us-east-1/nxs/$NPG_DATABASE.gz $DB_DUMP_DIRECTORY                    |"
+    echo "|  ./create-multi-database npg         --  Create docker NXS database                                                                         |"    
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+    echo "|  ./create-multi-database stop      -- stop all running containers                                                                           |"
+    echo "|  ./create-multi-database delall    -- delete all containers and images                                                                      |"
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+    echo "|  ./create-multi-database country   -- SELECT * FROM lak_lpf.country LIMIT 25;                                                               |"
+    echo "|  ./create-multi-database s3        -- Show list of DB folder  on AWS - aws s3 ls --h s3://lakana-engineering-assets-us-east-1;              |"
+    echo "+---------------------------------------------------------------------------------------------------------------------------------------------+"
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "get_s3_c4k" ] 2>/dev/null; then    
+    get_s3_c4k
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "get_s3_fox" ] 2>/dev/null; then
+    get_s3_fox
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "get_s3_cmg" ] 2>/dev/null; then
+    get_s3_cmg
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "get_s3_gmg" ] 2>/dev/null; then
+    get_s3_gmg
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "get_s3_npg" ] 2>/dev/null; then
+    get_s3_npg
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "get_s3_nxs" ] 2>/dev/null; then
+    get_s3_nxs
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "c4k" ] 2>/dev/null; then
+    get_s3_c4k
+    sleep 5
+    create_docker_instanace
+    sleep 5
+    create_c4k
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "fox" ] 2>/dev/null; then
+    get_s3_fox
+    sleep 5
+    create_docker_instanace
+    sleep 5
+    create_fox
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "cmg" ] 2>/dev/null; then
+    get_s3_cmg
+    sleep 5
+    create_docker_instanace
+    sleep 5
+    create_cmg
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "gmg" ] 2>/dev/null; then
+    get_s3_gmg
+    sleep 5
+    create_docker_instanace
+    sleep 5
+    create_gmg
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "npg" ] 2>/dev/null; then
+    get_s3_npg
+    sleep 3
+    create_docker_instanace
+    sleep 3
+    create_npg
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "nxs" ] 2>/dev/null; then
+    get_s3_nxs
+    sleep 3
+    create_docker_instanace
+    sleep 3
+    create_nxs
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "all" ] 2>/dev/null; then    
+    get_s3_c4k
+    get_s3_fox
+    get_s3_cmg
+    get_s3_gmg
+    get_s3_npg
+    get_s3_nxs
+    sleep 5
+    
+    create_docker_instanace
+    sleep 5
+    
+    create_c4k
+    create_fox
+    create_cmg
+    create_gmg
+    create_npg
+    create_nxs
+    sleep 5    
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "stop" ] 2>/dev/null; then
+    docker stop $(docker ps -a -q) # stops all running containers    
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "delall" ] 2>/dev/null; then
+    docker rm $(docker ps -a -q)
+    docker rmi $(docker images -q)
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "country" ] 2>/dev/null; then
+    psql -h 127.0.0.1 -p 5433 -P pager c4k -c "SELECT * FROM lak_lpf.country LIMIT 25;"
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+elif [ "$1" == "s3" ] 2>/dev/null; then
+    aws s3 ls --h s3://lakana-engineering-assets-us-east-1;
+fi
+#-------------------------------------------------------------------------------------------------------------------------------------------------------#
+
